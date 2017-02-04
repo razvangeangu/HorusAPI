@@ -1,0 +1,17 @@
+{
+  "name": "ichack",
+  "version": "1.0.0",
+  "main": "app_js.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^4.14.1",
+    "fs": "0.0.1-security",
+    "http": "0.0.0",
+    "socket.io": "^1.7.2"
+  }
+}
