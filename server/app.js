@@ -6,6 +6,7 @@ var io = require('socket.io')(http);
 var fs = require('fs');
 var logStream = fs.createWriteStream(__dirname + '/access.log', {flags: 'a'});
 var cors = require('cors');
+var child_process = require('child_process');
 
 cors(app);
 
@@ -24,7 +25,16 @@ io.on('connection', function (socket) {
 //        console.log(data);
 
         // logStream.write(socket.handshake.address + ": " + data.message + "\n");
-        // fs.writeFile("photo.jpg", new Buffer(data, "base64"), function(err) {});
+        fs.writeFile("../uploads/photo.jpg", new Buffer(data, "base64"), function(err) {	
+		child_process.exec('sudo ../shell/./predict.sh ${HOME}/horus/uploads/photo.jpg', function(err, stdout, stderr) {
+			if (err) {
+				console.error(err);
+			} else{
+				console.log(stdout);
+				console.log(stderr);
+			}
+		});
+	 });
 
         // message received from client, now broadcast it to everyone else
 	io.emit('server:message',['Apple for life', '30', '20']);
