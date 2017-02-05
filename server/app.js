@@ -22,28 +22,34 @@ io.on('connection', function (socket) {
     console.log(username + ' connected from ip:  ' + socket.handshake.address);
 
     socket.on('client:message', function (data) {
-//        console.log(data);
-
         // logStream.write(socket.handshake.address + ": " + data.message + "\n");
         fs.writeFile("../uploads/photo.jpg", new Buffer(data, "base64"), function(err) {	
 		child_process.exec('sudo ../shell/./predict.sh ${HOME}/horus/uploads/photo.jpg', function(err, stdout, stderr) {
 			if (err) {
 				console.error(err);
-			} else{
-				console.log(stdout);
-				console.log(stderr);
+			} else {
+				const regex = /0\)(.*)\s\.\s/g;
+				var match = regex.exec(stdout);
+
+				console.log(match[1]);
+	
+				io.emit('server:message', match[1]);
+				// console.log(stdout);
+				// console.log(stderr);
 			}
 		});
 	 });
 
         // message received from client, now broadcast it to everyone else
-	io.emit('server:message',['Apple for life', '30', '20']);
+	//io.emit('server:message',['Apple for life', '30', '20']);
     })
 
     socket.on('disconnect', function () {
         console.log(username + ' disconnected');
     });
 });
+
+
 
 http.listen(8080, function(){
   console.log('listening on *:8080');
