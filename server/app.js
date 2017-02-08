@@ -23,17 +23,24 @@ io.on('connection', function (socket) {
 
     socket.on('client:message', function (data) {
         // logStream.write(socket.handshake.address + ": " + data.message + "\n");
+
+	console.log('received a message');
+
         fs.writeFile("../uploads/photo.jpg", new Buffer(data, "base64"), function(err) {	
 		child_process.exec('sudo ../shell/./predict.sh ${HOME}/horus/uploads/photo.jpg', function(err, stdout, stderr) {
 			if (err) {
-				console.error(err);
+				// console.error(err);
+				io.emit('server:message', 'Sorry, I could not recognize anything');
 			} else {
-				const regex = /0\)(.*)\s\.\s/g;
-				var match = regex.exec(stdout);
-
-				console.log(match[1]);
-	
-				io.emit('server:message', match[1]);
+				if (!err || !stderr) { 
+					const regex = /0\)(.*)\s\.\s/g;
+					var match = regex.exec(stdout);
+					
+					if (match) {
+						console.log(match[1]);
+						io.emit('server:message', match[1]);
+					}
+				}
 				// console.log(stdout);
 				// console.log(stderr);
 			}
